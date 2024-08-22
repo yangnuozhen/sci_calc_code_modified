@@ -83,6 +83,7 @@ extern byte COL_MOSI[COLCNT];
 
 // Hide sidebar
 extern bool HIDE_SIDEBAR;
+extern bool SHOW_BATTERY_PERCENTAGE;
 
 extern char keys[ROWCNT][COLCNT];
 //extern Keypad keypad;
@@ -133,6 +134,8 @@ std::string numToStrRaw(long double x);
 void performUpdate(Stream &updateSource, size_t updateSize);
 void updateFromFS(fs::FS &fs, std::string);
 void rebootEspWithReason(std::string reason);
+uint8_t getBatteryLevel();
+float getBatteryVoltage();
 bool checkSyntax(std::string str);
 
 // Used for program loading

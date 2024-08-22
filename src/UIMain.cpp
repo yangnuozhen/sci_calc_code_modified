@@ -83,6 +83,7 @@ InputBox inputBox(0, 0, 100, 12, 15);
 Menu calcMenu(0, -70, 0, 0, 210, 48, 3);
 InputBox expressionInput(0, 64, 210, 12, 42);
 Checkbox checkbox1("Soild fill cursor", &cursorMode);
+Checkbox checkbox2("Show Battery Percentage", &SHOW_BATTERY_PERCENTAGE);
 //Slider slider1("Testval", 0, 100);
 Funstuff funstuff;
 
@@ -93,11 +94,21 @@ MacroPad calcLayout({
 });
 
 Menu menuSpecs(0, -70, 0, 0, 210, 64, 5, {
+    new Text(("Version: " + VERSION).c_str()),
     new Text("Powered by an ESP32 WROOM-32E"), 
     new Text("Kailh choc switches"), 
-    new Text("Designed by SHAO")
+    new Text("Designed by SHAO"),
+    new Text("Firmware Developed by SHAp256"),
+    new Text("Firmware Modified by Aunt_nuozhen"),
+    new Text("Hardware Installed by Aunt_nuozhen"),
+    new Text("Owned by Aunt_nuozhen")
 },
 {
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
     nullptr,
     nullptr,
     nullptr
@@ -106,31 +117,31 @@ Menu menuSpecs(0, -70, 0, 0, 210, 64, 5, {
 
 Menu menuSettings(0, -70, 0, 0, 210, 64, 5, {
     &checkbox1,
+    &checkbox2,
     new Text("Reload Bin"),
-    new Text("Draw Chinese with Type 1"),
-    new Text("Draw Chinese with Type 2"),
-    new Text("Draw Chinese with Type 3"),
-    new Text(("Version: " + VERSION).c_str()),
-    new Text("Developed by SHAp256"),
-    new Text("Modified & Installed by Aunt_nuozhen"),
-    new Text("Owned by Aunt_nuozhen")
+    new Text("About")
 },
 {
     &checkbox1,
+    &checkbox2,
     new BinLink("/main.bin"),
-    new ChineseText(1),
-    new ChineseText(2),
-    new ChineseText(3),
-    nullptr,
-    nullptr,
-    nullptr,
-    nullptr
+    &menuSpecs
 });
 
 
 
 Calculator calcMain(0, 0, 210, 64, &calcMenu, &expressionInput);
 CalculatorRPN calcRPN(0, 0, 210, 64);
+
+/* City xiamen = City("Xiamen", "23.06,117.17");
+WeatherUI xiamenWeather(0, 0, 0, -70, 210, 64, &xiamen);
+
+Menu weatherCitySelector(0, -70, 0, 0, 210, 64, 5, {
+    new Text(xiamen.getCityName()),
+},
+{
+    &xiamenWeather,
+}); */
 
 Menu programMenu(0, -70, 0, 0, 210, 64, 4, {
     new Text("Chess"),

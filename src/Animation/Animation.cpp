@@ -175,8 +175,23 @@ Animation::Animation(int* targetVal, AnimationType aniType, int endVal, int tota
 // Initializes the animation
 void Animation::init() {
     this -> createTime = millis();
+    if (targetVal != nullptr) {
+        if (esp_ptr_in_dram(targetVal)) {
+            startVal = *targetVal;
+        }
+    }
     this -> isStarted = true;
+    this -> isAnimating = false;
+    this -> isFinished = false;
 }
+/* // Initializes the animation with another starting value
+void Animation::init(const int startVal) {
+    this -> createTime = millis();
+    this -> startVal = startVal;
+    this -> isStarted = true;
+    this -> isAnimating = false;
+    this -> isFinished = false;
+} */
 
 // Checks whether if the animation is supposed to begin
 bool Animation::checkTime() {
@@ -439,6 +454,7 @@ void Animation::animate() {
     }
 }
 
+
 std::map <UIElement*, Animation*> animationsUI; // A map that stores which UIElement corresponds to which Animation object
 std::map <int*, Animation*> animationsInt; // A map that stores which animated int corresponds to which Animation object
 std::list <UIElement*> tmpAnimationUI; // A list of UIElements that need animating
@@ -458,6 +474,7 @@ void insertAnimation(Animation* animation) {
 bool isFinished(int* targetInt) {
     return animationsInt.find(targetInt) == animationsInt.end();
 }
+
 
 // Returns if the UIElement has finished animating or not
 bool isFinished(UIElement* targetUI) {

@@ -15,6 +15,7 @@ byte ROW_MISO[ROWCNT] = {33, 32, 35, 34, 39};
 byte COL_MOSI[COLCNT] = {13, 12, 14, 27, 26, 25};
 
 bool HIDE_SIDEBAR = false;
+bool SHOW_BATTERY_PERCENTAGE = false;
 
 char keys[ROWCNT][COLCNT] = {
     {'i', '/', '*', '-', 'a', 'b'},
@@ -292,4 +293,26 @@ void initFromFile() {
     }
 
     file.close();
+}
+
+float getBatteryVoltage() {
+    int adcValue = analogRead(36);
+    float voltage = adcValue / 4095.0 * 2 * 3.3; // 假设使用分压电路将电压分为一半
+    return voltage;
+}
+uint8_t getBatteryLevel() {
+    float voltage = getBatteryVoltage();
+    float BATTERY_FULL_VOLTAGE = 4.3;
+    float BATTERY_EMPTY_VOLTAGE = 3.0;
+  
+    // 限制电压范围在最低和最高电压之间
+    if (voltage > BATTERY_FULL_VOLTAGE) {
+        voltage = BATTERY_FULL_VOLTAGE;
+    } else if (voltage < BATTERY_EMPTY_VOLTAGE) {
+        voltage = BATTERY_EMPTY_VOLTAGE;
+    }
+    
+    // 计算电量百分比
+    float percentage = (voltage - BATTERY_EMPTY_VOLTAGE) / (BATTERY_FULL_VOLTAGE - BATTERY_EMPTY_VOLTAGE) * 100;
+    return (uint8_t)percentage;
 }

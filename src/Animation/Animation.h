@@ -17,6 +17,7 @@ class Animation {
 
 
         void init();
+        void init(const int startVal);
         void initAni();
         UIElement* getTargetElement();
         int* getTargetVal();

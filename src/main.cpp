@@ -6,9 +6,7 @@
 
 
 
-
 BleKeyboard bleKeyboard("SCI-CALC", "SHAP", 100);
-
 
 
 void init() {
@@ -51,6 +49,7 @@ void setup() {
 
 void loop() { 
     animateAll();
+    bleKeyboard.setBatteryLevel(getBatteryLevel());
     u8g2.clearBuffer();
     kb.update();
     drawSidebar();
