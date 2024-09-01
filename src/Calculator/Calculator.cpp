@@ -18,6 +18,7 @@ void Calculator::activate() {
     insertAnimation(new Animation(this -> expressionInput, INDENT, 0, 57, 500));
 }
 
+// 当用户在计算历史按下Enter后，将焦点返回输入框并且插入用户选择的历史值
 void Calculator::insertExpression() {
     this -> expressionInput -> insertStr(clipboard);
     clipboard = "";

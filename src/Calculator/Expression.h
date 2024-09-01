@@ -49,6 +49,9 @@ class Expression {
         // Evaluate Expressions
         long double evaluateExpressionPointer(Node* node);
         long double evaluateExpression();
+        long double evaluateWithVariable(std::string variable, long double value);
+
+        long double evaluateWithVariablePointer(Node *node, std::string variable, long double value);
 
         // Derivative Calculation
         Expression derivativePointer(Node* node); // needs fixing

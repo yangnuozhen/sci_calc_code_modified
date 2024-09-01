@@ -3,7 +3,7 @@
 
 #include "../Animation/Animation.h"
 #include "Cursor.h"
-#include "Box.h"
+//#include "Box.h"
 
 class InputBox : public UIElement {
     public:
@@ -12,6 +12,7 @@ class InputBox : public UIElement {
         
 
         InputBox(int x, int y, int width, int height, int maxChar);
+        InputBox(int x, int y, int width, int height, int maxChar, MacroPad* macropad);
         
         void init();
         void activate();
@@ -46,6 +47,7 @@ class InputBox : public UIElement {
         int cursorPos, strPos, maxChar;
         Cursor cursor;
         std::string str;
+        MacroPad* macropad;
         
 };
 

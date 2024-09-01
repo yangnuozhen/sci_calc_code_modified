@@ -20,6 +20,7 @@
 #include "./UIElements/Checkbox.h"
 #include "./UIElements/Funstuff.h"
 #include "./UIElements/Slider.h"
+#include "./Calculator/GraphicCalc.h"
 
 
 extern std::string clipboard;
@@ -33,6 +34,7 @@ extern Macro layout3[5][6];
 extern Macro layout4[5][6];
 extern MacroPad macroPad;
 extern MacroPad calcLayout;
+//extern MacroPad graphicCalcLayout;
 extern MacropadUI macropadUI;
 
 extern Menu menu;

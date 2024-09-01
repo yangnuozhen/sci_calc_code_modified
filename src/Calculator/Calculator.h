@@ -2,7 +2,6 @@
 #define CALCULATOR_H
 
 #include "../Animation/Animation.h"
-#include "../UIElements/Text.h"
 #include "../UIElements/Menu.h"
 #include "../UIElements/Cursor.h"
 #include "../UIElements/Box.h"

@@ -132,7 +132,7 @@ std::pair <int, int> Keyboard::getRisingEdgeKey() {
 std::pair <int, int> Keyboard::getFallingEdgeKey() {
     for (int i = 0; i < ROWCNT; i++) {
         for (int j = 0; j < COLCNT; j++) {
-            if (this -> keys[i][j].getStatus() == RISING_EDGE) {
+            if (this -> keys[i][j].getStatus() == FALLING_EDGE) {
                 return std::make_pair(i, j);
             }
         }

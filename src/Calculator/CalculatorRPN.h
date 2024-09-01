@@ -6,7 +6,7 @@
 #include "../UIElements/Menu.h"
 #include "../UIElements/Cursor.h"
 #include "../UIElements/Box.h"
-#include "../UIElements/InputBox.h"
+//#include "../UIElements/InputBox.h"
 #include "EvaluatorRPN.h"
 
 class CalculatorRPN : public UIElement {

@@ -73,6 +73,9 @@ const uint16_t KEY_ATAN = 0x107;
 const uint16_t KEY_SQRT = 0x108;
 const uint16_t KEY_MODE_SWITCH = 0x109;
 const uint16_t KEY_RPN_SWITCH = 0x10A;
+const uint16_t KEY_CLEAR = 0x10B;
+const uint16_t KEY_SCALE_UP = 0x10C;
+const uint16_t KEY_SCALE_DOWN = 0x10D;
 
 // Keyboard matrix dimensions
 const byte ROWCNT = 5;

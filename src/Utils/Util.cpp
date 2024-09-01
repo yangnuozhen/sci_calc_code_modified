@@ -98,6 +98,9 @@ std::string getKeyString(uint16_t x) {
         case KEY_SQRT: return "sqrt";
         case KEY_MODE_SWITCH: return "MODE SWITCH";
         case KEY_RPN_SWITCH: return "RPN SWITCH";
+        case KEY_CLEAR: return "CLEAR";
+        case KEY_SCALE_UP: return "SCALE UP";
+        case KEY_SCALE_DOWN: return "SCALE DOWN";
         default:
             std::string res(1, char(x));
         return res;
