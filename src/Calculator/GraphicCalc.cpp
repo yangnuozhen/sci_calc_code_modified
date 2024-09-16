@@ -26,7 +26,7 @@ void GraphicCalc::enter()
 void GraphicCalc::draw()
 {
     this->expressionInput->draw();
-    this->graphicDrawer->draw();
+    //this->graphicDrawer->draw();
     u8g2.drawStr(215, 24, (std::to_string(graphicDrawer -> getScale()) + "x").c_str());
 }
 

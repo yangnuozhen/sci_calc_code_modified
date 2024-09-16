@@ -21,6 +21,7 @@
 #include "./UIElements/Funstuff.h"
 #include "./UIElements/Slider.h"
 #include "./Calculator/GraphicCalc.h"
+#include "./Calculator/StatisticsUI.h"
 
 
 extern std::string clipboard;

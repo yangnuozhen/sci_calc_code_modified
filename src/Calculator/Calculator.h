@@ -27,6 +27,8 @@ class Calculator : public UIElement {
         Menu* calcMenu;
         InputBox* expressionInput;
         bool mode; //0: input mode 1: navigate mode
+        int curtimesyntax;
+        bool state;
 };
 
 #endif

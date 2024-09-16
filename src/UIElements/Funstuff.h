@@ -25,6 +25,7 @@ class Funstuff : public UIElement {
         std::string expression;
         bool isBlink;
         bool isVertical;
+        int currentSmile;
 };
 
 #endif

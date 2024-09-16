@@ -3,53 +3,52 @@
 
 #include "../Animation/Animation.h"
 #include "Cursor.h"
-//#include "Box.h"
+// #include "Box.h"
 
-class InputBox : public UIElement {
-    public:
-        
-        InputBox();
-        
+class InputBox : public UIElement
+{
+public:
+    InputBox();
 
-        InputBox(int x, int y, int width, int height, int maxChar);
-        InputBox(int x, int y, int width, int height, int maxChar, MacroPad* macropad);
-        
-        void init();
-        void activate();
-        void deactivate();
+    InputBox(int x, int y, int width, int height, int maxChar);
+    InputBox(int x, int y, int width, int height, int maxChar, MacroPad *macropad);
 
-        std::string getStr();
-        void setStr(std::string str);
-        void clearStr();
-         
-        void insertStr(std::string insertStr);
-        void deleteStr();
+    void init();
+    void activate();
+    void deactivate();
 
-        int moveCursorLeft(int x);
-        int moveCursorRight(int x) ;
+    std::string getStr();
+    void setStr(std::string str);
+    void clearStr();
 
-        void moveStrLeft(int x);
-        void moveStrRight(int x);
+    void insertStr(std::string insertStr);
+    void deleteStr();
 
-        int getStrPos();
-  
-        void scrollLeft(int x);
+    int moveCursorLeft(int x);
+    int moveCursorRight(int x);
 
-        void scrollRight(int x);
-        std::string enter();
+    void moveStrLeft(int x);
+    void moveStrRight(int x);
 
-        void draw();
+    int getStrPos();
 
+    void scrollLeft(int x);
 
-        void update();
+    void scrollRight(int x);
+    std::string enter();
 
-    private:
-        int cursorPos, strPos, maxChar;
-        Cursor cursor;
-        std::string str;
-        MacroPad* macropad;
-        
+    void draw();
+
+    void update();
+
+private:
+    int cursorPos, strPos, maxChar;
+    Cursor cursor;
+    std::string str;
+    MacroPad *macropad;
+    int delPressedTime;
+    bool repeatDelete = false;
+    int lastDeleteTime;
 };
-
 
 #endif

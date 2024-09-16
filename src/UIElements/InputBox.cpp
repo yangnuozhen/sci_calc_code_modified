@@ -136,7 +136,6 @@ void InputBox::scrollRight(int x)
 void InputBox::insertStr(std::string insertStr)
 {
     this->str.insert(this->getStrPos(), insertStr);
-    Serial.printf("sttr size: %d\n", this->str.size());
     scrollRight(insertStr.size());
 }
 
@@ -145,7 +144,6 @@ void InputBox::deleteStr()
     if (this->cursorPos + this->strPos == 0)
         return;
     this->str.erase(this->getStrPos() - 1, 1);
-    Serial.printf("sttr size: %d\n", this->str.size());
     scrollLeft(1);
 }
 
@@ -186,9 +184,7 @@ void InputBox::draw()
     this->cursor.setY(this->y);
 }
 
-int delPressedTime;
-bool repeatDelete = false;
-int lastDeleteTime;
+
 void InputBox::update()
 {
     // Serial.printf("this cursor: %d, %d\n", this -> cursor.getTargetX(), this -> cursor.getTargetY());
@@ -221,22 +217,18 @@ void InputBox::update()
     }
     else if (str == "BKSP")
     {
-        Serial.println("deleting str");
         deleteStr();
     }
-    else if ((kb.getRisingEdgeKey() != std::make_pair(-1, -1)) && ((str != "RIGHT" && str != "LEFT" && str != "UP" && str != "DOWN" && str != "LAYER SWITCH" && str != "MODE SWITCH" && str != "RPN SWITCH" && str != "CLEAR" && str != "SCALE UP" && str != "SCALE DOWN")))
+    else if ((kb.getRisingEdgeKey() != std::make_pair(-1, -1)) && ((str != "RIGHT" && str != "LEFT" && str != "UP" && str != "DOWN" && str != "LAYER SWITCH" && str != "MODE SWITCH" && str != "RPN SWITCH" && str != "CLEAR" && str != "SCALE UP" && str != "SCALE DOWN" && str != "TAB")))
     {
-        Serial.println("funciwdi");
         insertStr(macropad -> updateString());
     }
     if (kb.getRisingEdgeKey() == std::make_pair(4, 3))
     {
         delPressedTime = millis();
-        Serial.println("delPressedTime = " + String(delPressedTime));
     }
     if (kb.getKey(4, 3).getIsPressed())
     {
-        // delay(20);
         if (millis() - delPressedTime > 750)
         {
             repeatDelete = true;
@@ -247,14 +239,8 @@ void InputBox::update()
         }
         if (repeatDelete && (millis() - lastDeleteTime > 100))
         {
-            Serial.println("deleting str[Repeat]");
             deleteStr();
             lastDeleteTime = millis();
         }
-    }
-    if (kb.getRisingEdgeKey() != std::make_pair(-1, -1))
-    {
-
-        Serial.printf("curpos: %d\n", getStrPos());
     }
 }

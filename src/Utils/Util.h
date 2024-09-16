@@ -139,6 +139,7 @@ void updateFromFS(fs::FS &fs, std::string);
 void rebootEspWithReason(std::string reason);
 uint8_t getBatteryLevel();
 float getBatteryVoltage();
+void printHeapInfo();
 bool checkSyntax(std::string str);
 
 // Used for program loading

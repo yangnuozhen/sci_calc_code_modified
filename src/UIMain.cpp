@@ -188,11 +188,15 @@ Menu stopwatchMenu(0, -70, 0, 0, 110, 64, 4);
 
 StopwatchUI stopwatchUI(0, 0, 210, 64, &stopwatchMenu);
 
+InputBox statisticsInputBox(0, 64, 210, 12, 42);
+Menu statisticsDataMenu(-100, 0, 0, 0, 110, 48, 3);
+StatisticsUI statistics(0, 0, 210, 64, &statisticsInputBox, &statisticsDataMenu);
 
 Menu mainMenu(-100, 0, 0, 0, 70, 64, 4, {
     new Text("Calculator"),
     new Text("RPN Calc"),
     new Text("Graphic"),
+    new Text("Statistics"),
     new Text("Macropad"), 
     new Text("Programs"), 
     new Text("Stopwatch"),
@@ -202,6 +206,7 @@ Menu mainMenu(-100, 0, 0, 0, 70, 64, 4, {
     &calcMain, 
     &calcRPN,
     &graCalc,
+    &statistics,
     &macropadUI, 
     &programMenu, 
     &stopwatchUI,

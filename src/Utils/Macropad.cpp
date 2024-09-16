@@ -73,6 +73,13 @@ Layout MacroPad::getLayout() {
     return this -> layouts[this -> curLayout];
 }
 
+void MacroPad::setLayout(int layoutName)
+{
+    if (layoutName >= 0 && layoutName < layouts.size()){
+        this -> curLayout = layoutName;
+    }
+}
+
 bool MacroPad::curIsHeld() {
     if (kb.getKey(this -> curPressed.first, this -> curPressed.second).getStatus() == PRESSED) {
         return true;
