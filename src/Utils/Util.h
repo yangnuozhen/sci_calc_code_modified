@@ -30,6 +30,7 @@
 #define SPI_CS 5
 #define SPI_DC 16
 #define SPI_RESET 17
+#define WAKEUP_PIN 36
 
 extern U8G2_SSD1322_NHD_256X64_F_4W_HW_SPI u8g2;
 
@@ -45,7 +46,7 @@ Fixed Macropad bug where in some layers row 0 and 1 were swapped.
 
 */
 
-const std::string VERSION = "1.2 - Aunt_nuozhen Modified";
+const std::string VERSION = "Aunt_nuozhen Modified - 2.0";
 const int REFRESH_DURATION = 10; // The refresh rate of the the program (in milliseconds)
 const float DELTA_TIME = 100; // in milliseconds
 extern bool sample;

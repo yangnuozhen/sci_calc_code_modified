@@ -1,7 +1,7 @@
 #include "BinLink.h"
 
 BinLink::BinLink(std::string path) {
-    this -> path = path;
+    this -> path = "/AnotherPrograms" + path;
 }
 
 void BinLink::activate() {

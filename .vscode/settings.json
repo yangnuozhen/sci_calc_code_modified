@@ -76,7 +76,8 @@
     "xfacet": "cpp",
     "xiosbase": "cpp",
     "xlocale": "cpp",
-    "xlocinfo": "cpp"
+    "xlocinfo": "cpp",
+    "ios": "cpp"
   },
   "C_Cpp_Runner.cCompilerPath": "gcc",
   "C_Cpp_Runner.cppCompilerPath": "g++",

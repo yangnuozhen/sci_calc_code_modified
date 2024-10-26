@@ -117,6 +117,7 @@ MacroPad calcLayout({
 
 Menu menuSpecs(0, -70, 0, 0, 210, 64, 5, {
     new Text(("Version: " + VERSION).c_str()),
+    new Text("Firmware Based On V1.2"),
     new Text("Powered by an ESP32 WROOM-32E"), 
     new Text("Kailh choc switches"), 
     new Text("Designed by SHAO"),
@@ -172,7 +173,8 @@ Menu programMenu(0, -70, 0, 0, 210, 64, 4, {
     new Text("Snake"),
     new Text("Tetris"),
     new Text("Catacombs of the damned"),
-    new Text("Squario")
+    new Text("Squario"),
+    new Text("Web File Browser Server")
 },
 {
     new BinLink("/chess.bin"),
@@ -180,8 +182,8 @@ Menu programMenu(0, -70, 0, 0, 210, 64, 4, {
     new BinLink("/snake.bin"),
     new BinLink("/tetris.bin"),
     new BinLink("/COTD.bin"),
-    new BinLink("/squario.bin")
-    
+    new BinLink("/squario.bin"),
+    new BinLink("/WFB.bin")
 });
 
 Menu stopwatchMenu(0, -70, 0, 0, 110, 64, 4);
