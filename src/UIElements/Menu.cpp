@@ -134,6 +134,19 @@ void Menu::insertElement(UIElement *targetElement, UIElement *linkElement)
     this->cursor.changeTarget(subElements[this->cursorPos + this->menuPos], 100);
 }
 
+// 删除指定索引的元素
+void Menu::deleteElement(size_t n)
+{
+    if (n < this->subElements.size())
+    {
+        delete this->subElements[n];
+        this->subElements.erase(this->subElements.begin() + n);
+        this->linkElements.erase(this->linkElements.begin() + n);
+        this->scrollBar.setY(this->y + 5 + (float(getMenuPos()) / float(this->getSize()) * (this->height - 10)));
+        this->scrollBar.setHeight(((this->height - 10) / this->getSize()));
+    }
+}
+
 bool Menu::moveCursorUp()
 {
     if (this->cursorPos > 0)

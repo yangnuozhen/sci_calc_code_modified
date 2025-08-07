@@ -17,7 +17,7 @@ public:
     StatisticsUI(int x, int y, int width, int height, InputBox *dataInputBox, Menu *dataMenu);
     void activate();
     void init();
-    void enter();
+    void inputNum();
     void draw();
     void update();
 

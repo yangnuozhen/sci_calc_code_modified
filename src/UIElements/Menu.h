@@ -22,6 +22,7 @@ public:
     void aniOut();
 
     void insertElement(UIElement *targetElement, UIElement *linkElement);
+    void deleteElement(size_t n);
 
     bool moveCursorUp();
     bool moveCursorDown();

@@ -23,7 +23,7 @@ void StatisticsUI::activate()
     insertAnimation(new Animation(this->dataInputBox, INDENT, 0, 57, 500));
 }
 
-void StatisticsUI::enter()
+void StatisticsUI::inputNum()
 {
 
     if (!isValidNumber(this->dataInputBox->getStr()))
@@ -125,20 +125,33 @@ void StatisticsUI::update()
 
         goBack();
     }
+    // 在输入状态下按下 Enter
     else if (kb.getRisingEdgeKey() == std::make_pair(3, 3) && this->viewState == 0 && this->mode == 0 && this->dataInputBox->getStr() != "")
     {
-        enter();
+        inputNum();
     }
+    // Shift + Enter
     else if (kb.getKey(3, 3).getIsPressed() && kb.getKey(4, 0).getIsPressed() && this->viewState == 0 && this->dataMenu->getSize() != 0)
     {
         bool viewState = 1;
         calcLayout.setLayout(0);
         calculateAll();
     }
+    // 切换到菜单选择模式
     else if (kb.getRisingEdgeKey() == std::make_pair(4, 5) && this->viewState == 0)
     {
         if (this->dataMenu->getSize() != 0)
             this->mode = !(this->mode);
+    }
+    // 菜单模式按下 DEL
+    else if (kb.getRisingEdgeKey() == std::make_pair(4, 3) && this->viewState == 0 && this->mode == 1)
+    {
+        // 删除数据
+        if (this->dataMenu->getMenuPos() != 0)
+        {
+            this->statistics.popData(this->dataMenu->getMenuPos());
+            this->dataMenu->deleteElement(this->dataMenu->getMenuPos());
+        }
     }
     draw();
 }
