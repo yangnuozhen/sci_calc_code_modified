@@ -18,6 +18,18 @@ std::vector<std::string> splitTextIntoLines(const std::string &text, int charsPe
 
     for (size_t i = 0; i < text.size();)
     {
+        // 如果匹配为换行符，直接换行
+        if (text[i] == '\n')
+        {
+            if (!currentLine.empty())
+            {
+                lines.push_back(currentLine);
+                currentLine.clear();
+                charCount = 0;
+            }
+            i++;
+            continue;
+        }
         unsigned char c = text[i];
         int charLen = 1;
 
