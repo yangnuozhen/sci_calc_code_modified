@@ -12,6 +12,7 @@ class GraphicDrawer : public UIElement {
         void activate();
         void setExpression(std::string expression);
         void clearGraph();
+        void calcGraph();
         float getScale();
         void setScale(float scale);
         void draw();
@@ -22,5 +23,8 @@ class GraphicDrawer : public UIElement {
         Expression* expressionObject;
         float scale;
         bool hasExpression;
+        bool isDrew;
+        bool isDrawing;
+        std::vector<std::pair<int, int>> points;
 };
 #endif

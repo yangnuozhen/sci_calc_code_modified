@@ -42,11 +42,37 @@ void GraphicDrawer::setExpression(std::string expression)
     this->expression = expression;
     expressionObject = new Expression(expression);
     hasExpression = true;
+    isDrew = false;
+    isDrawing = true;
+    update();
+    u8g2.sendBuffer();
+    calcGraph();
 }
 
 void GraphicDrawer::clearGraph()
 {
     hasExpression = false;
+    isDrew = false;
+    points.clear();
+}
+void GraphicDrawer::calcGraph()
+{
+    if (!hasExpression) return;
+
+    points.clear();
+    for (int x = 0; x < width; x++)
+    {
+        float fx = (x - 105) / scale;
+        float fy = expressionObject->evaluateWithVariable("x", fx);
+        int y = (this->y + height) / 2 - fy * scale;
+
+        if (y >= this->y && y < this->y + height)
+        {
+            points.push_back(std::make_pair(x, y));
+        }
+    }
+    isDrew = true;
+    isDrawing = false;
 }
 float GraphicDrawer::getScale()
 {
@@ -61,31 +87,21 @@ void GraphicDrawer::setScale(float scale)
 void GraphicDrawer::draw()
 {
     u8g2.drawRFrame(x, y, width, height, 2);
-    if (hasExpression)
-    {
-        // Draw graph
+    if (isDrawing){
+        u8g2.drawStr(x + width / 2 - u8g2.getStrWidth("Drawing...") / 2, y + height / 2 + (u8g2.getAscent() - u8g2.getDescent()) / 2, "Drawing..."); // ps:这是一行可供参考的中央字符串绘制代码（
+        return;
+    }
+    
 
+
+    if (points.size() > 0)
+    {
         // 绘制坐标轴
         u8g2.drawLine(x + 2, (y + height) / 2, x + width - 2, (y + height) / 2); // x轴
         u8g2.drawLine((x + width) / 2, y + 2, (x + width) / 2, y + height - 2);  // y轴
-        for (int x = 0; x < width; x++)
+        for (const auto &point : points)
         {
-            // 将屏幕坐标转换为函数坐标
-            float fx = (x - 128) / scale;                               // 假设x范围为[-12.8, 12.8]
-            float fy = expressionObject->evaluateWithVariable("x", fx); // 计算y值
-            int y = (this->y + height) / 2 - fy * scale;                // 将函数值转换为屏幕坐标，假设y范围为[-3.2, 3.2]
-
-            // 绘制点
-            if (y >= this->y && y < this->y + height)
-            {
-                /*                 Serial.println("Drawing");
-                                Serial.println("fx = " + String(fx));
-                                Serial.println("fy = " + String(fy));
-                                Serial.println("-> scale = " + String(scale));
-                                Serial.println("x = " + String(x));
-                                Serial.println("y = " + String(y)); */
-                u8g2.drawPixel(x, y);
-            }
+            u8g2.drawPixel(point.first, point.second);
         }
     }
     else
