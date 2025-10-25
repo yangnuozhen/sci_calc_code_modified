@@ -46,7 +46,7 @@ Fixed Macropad bug where in some layers row 0 and 1 were swapped.
 
 */
 
-const std::string VERSION = "Aunt_nuozhen Modified - 2.2";
+const std::string VERSION = "Aunt_nuozhen Modified - 3.0";
 const int REFRESH_DURATION = 10; // The refresh rate of the the program (in milliseconds)
 const float DELTA_TIME = 100; // in milliseconds
 extern bool sample;
@@ -120,7 +120,7 @@ enum Token {
 
 //settings
 extern bool cursorMode;
-
+extern bool sdAvailable;
 extern bool angleMode;
 extern bool RPNMode;
 extern std::string tokenStr[MAXOP];

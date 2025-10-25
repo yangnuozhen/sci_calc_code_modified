@@ -197,6 +197,15 @@ Menu mainMenu(-100, 0, 0, 0, 70, 64, 4, {new Text("Calculator"), new Text("RPN C
                &stopwatchUI,
     &menuSettings
 });
+Menu mainMenu_noPro(-100, 0, 0, 0, 70, 64, 4, {new Text("Calculator"), new Text("RPN Calc"), new Text("Graphic"), new Text("Statistics"), new Text("Macropad"), new Text("Stopwatch"), new Text("Settings")},
+              {&calcMain,
+               &calcRPN,
+               &graCalc,
+               &statistics,
+               &macropadUI,
+               &stopwatchUI,
+    &menuSettings
+});
 
 
 UIElement *currentElement = &mainMenu;

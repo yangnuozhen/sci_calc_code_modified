@@ -41,6 +41,7 @@ extern MacropadUI macropadUI;
 
 extern Menu menu;
 extern Menu mainMenu;
+extern Menu mainMenu_noPro;
 
 void displayTitle();
 void checkLowVoltage();
