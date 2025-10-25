@@ -22,6 +22,7 @@
 #include "./UIElements/Slider.h"
 #include "./Calculator/GraphicCalc.h"
 #include "./Calculator/StatisticsUI.h"
+#include "./UIElements/LowVoltage.h"
 
 
 extern std::string clipboard;
@@ -39,8 +40,10 @@ extern MacroPad calcLayout;
 extern MacropadUI macropadUI;
 
 extern Menu menu;
+extern Menu mainMenu;
 
 void displayTitle();
+void checkLowVoltage();
 
 
 #endif

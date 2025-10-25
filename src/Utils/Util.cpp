@@ -484,7 +484,7 @@ uint8_t getBatteryLevel()
 {
     float voltage = getBatteryVoltage();
     float BATTERY_FULL_VOLTAGE = 4.3;
-    float BATTERY_EMPTY_VOLTAGE = 3.0;
+    float BATTERY_EMPTY_VOLTAGE = 2.8;
 
     // 限制电压范围在最低和最高电压之间
     if (voltage > BATTERY_FULL_VOLTAGE)
@@ -499,4 +499,31 @@ uint8_t getBatteryLevel()
     // 计算电量百分比
     float percentage = (voltage - BATTERY_EMPTY_VOLTAGE) / (BATTERY_FULL_VOLTAGE - BATTERY_EMPTY_VOLTAGE) * 100;
     return (uint8_t)percentage;
+}
+
+std::string getBatteryPercentageStr()
+{
+    float voltage = getBatteryVoltage();
+    float BATTERY_MAX_VOLTAGE = 4.3;
+    float BATTERY_FULL_VOLTAGE = 3.7;
+    float BATTERY_EMPTY_VOLTAGE = 2.8;
+
+    if (voltage >= BATTERY_FULL_VOLTAGE)
+    {
+        return "CHG";
+    }
+
+    // 限制电压范围在最低和最高电压之间
+    if (voltage > BATTERY_FULL_VOLTAGE)
+    {
+        voltage = BATTERY_FULL_VOLTAGE;
+    }
+    else if (voltage < BATTERY_EMPTY_VOLTAGE)
+    {
+        voltage = BATTERY_EMPTY_VOLTAGE;
+    }
+
+    // 计算电量百分比
+    float percentage = (voltage - BATTERY_EMPTY_VOLTAGE) / (BATTERY_FULL_VOLTAGE - BATTERY_EMPTY_VOLTAGE) * 100;
+    return (std::to_string(percentage) + "%");
 }

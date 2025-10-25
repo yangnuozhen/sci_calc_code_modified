@@ -7,7 +7,6 @@ bool angleMode = 0; // 0: radians, 1: degree
 bool RPNMode = 0;
 ESP32Time rtc;
 
-
 Macro layout1[5][6] = {
     {Macro({KEY_ESC}),          Macro({'/'}), Macro({'*'}), Macro({'-'}),           Macro({KEY_LEFT_ALT, KEY_LEFT_GUI, 'c'}, "C_PATH"), Macro({KEY_LEFT_GUI, 'r'}, "CMD+R")},
     {Macro({'7'}),              Macro({'8'}), Macro({'9'}), Macro({'+'}),           Macro({KEY_LEFT_GUI, 'c'}, "COPY"),  Macro({KEY_LEFT_GUI, 'v'}, "PASTE")},
@@ -48,21 +47,18 @@ Macro obsidianLayer[5][6] = {
 };
 
 
-//Macro("Rewrite this paragraph so that it is more concise, academic, and professional:", "ACAD", true)
-MacroPad macroPad({ 
+// Macro("Rewrite this paragraph so that it is more concise, academic, and professional:", "ACAD", true)
+MacroPad macroPad({
     Layout("standard", layout1),
     Layout("layout 2", layout2),
     Layout("photoshop", photoshopLayer),
     Layout("editing", filmoraLayer),
     Layout("obsidian", obsidianLayer),
-    //Layout("LLM", LLM)
+    // Layout("LLM", LLM)
 });
 
 MacropadUI macropadUI(&macroPad);
 
-
-
- 
 Macro layoutCalc1[5][6] = {
     {Macro({KEY_ESC}),          Macro({'/'}), Macro({'*'}), Macro({'-'}),           Macro({KEY_SIN}), Macro({KEY_SEC})},
     {Macro({'7'}),              Macro({'8'}), Macro({'9'}), Macro({'+'}),           Macro({KEY_COS}), Macro({KEY_CSC})},
@@ -71,7 +67,7 @@ Macro layoutCalc1[5][6] = {
     {Macro({KEY_LAYER_SWITCH}), Macro({'0'}), Macro({'.'}), Macro({KEY_BACKSPACE}), Macro({KEY_MODE_SWITCH}),     Macro({KEY_TAB})}
 };
 
-Macro layoutCalc2[5][6] = { 
+Macro layoutCalc2[5][6] = {
     {Macro({KEY_ESC}),          Macro({'('}),            Macro({')'}),             Macro({'-'}),           Macro({KEY_ASIN}), Macro({KEY_SEC})},
     {Macro({'7'}),              Macro({KEY_UP_ARROW}),   Macro({KEY_SCALE_UP}),             Macro({'x'}),           Macro({KEY_ACOS}), Macro({KEY_CSC})},
     {Macro({KEY_LEFT_ARROW}),   Macro({'5'}),            Macro({KEY_RIGHT_ARROW}), Macro({KEY_SQRT}),      Macro({KEY_ATAN}), Macro({KEY_COT})},
@@ -87,7 +83,7 @@ Macro layoutCalc2[5][6] = {
     {Macro({KEY_LAYER_SWITCH}), Macro({'0'}), Macro({'.'}), Macro({KEY_BACKSPACE}), Macro({KEY_MODE_SWITCH}),     Macro({KEY_TAB})}
 };
 
-Macro layoutGraphicCalc2[5][6] = { 
+Macro layoutGraphicCalc2[5][6] = {
     {Macro({KEY_ESC}),          Macro({'('}),            Macro({')'}),             Macro({'-'}),           Macro({KEY_ASIN}), Macro({KEY_SEC})},
     {Macro({'7'}),              Macro({KEY_UP_ARROW}),   Macro({'9'}),             Macro({'x'}),           Macro({KEY_ACOS}), Macro({KEY_CSC})},
     {Macro({KEY_LEFT_ARROW}),   Macro({'5'}),            Macro({KEY_RIGHT_ARROW}), Macro({KEY_SQRT}),      Macro({KEY_ATAN}), Macro({KEY_COT})},
@@ -101,14 +97,11 @@ InputBox expressionInput(0, 64, 210, 12, 42);
 InputBox graphicExpressionInput(0, 64, 210, 12, 42, &calcLayout);
 Checkbox checkbox1("Soild fill cursor", &cursorMode);
 Checkbox checkbox2("Show Battery Percentage", &SHOW_BATTERY_PERCENTAGE);
-//Slider slider1("Testval", 0, 100);
+// Slider slider1("Testval", 0, 100);
 Funstuff funstuff;
 
-
-MacroPad calcLayout({
-    Layout("1", layoutCalc1),
-    Layout("2", layoutCalc2)
-});
+MacroPad calcLayout({Layout("1", layoutCalc1),
+                     Layout("2", layoutCalc2)});
 
 /* MacroPad graphicCalcLayout({
     Layout("G1", layoutCalc1),
@@ -128,14 +121,13 @@ Menu menuSpecs(0, -70, 0, 0, 210, 64, 5, {
 },
 {
     &funstuff,
-    nullptr,
-    nullptr,
-    nullptr,
-    nullptr,
-    nullptr,
-    nullptr,
-    nullptr
-});
+                nullptr,
+                nullptr,
+                nullptr,
+                nullptr,
+                nullptr,
+                nullptr,
+                nullptr});
 
 
 Menu menuSettings(0, -70, 0, 0, 210, 64, 5, {
@@ -194,32 +186,26 @@ InputBox statisticsInputBox(0, 64, 210, 12, 42);
 Menu statisticsDataMenu(-100, 0, 0, 0, 110, 48, 3);
 StatisticsUI statistics(0, 0, 210, 64, &statisticsInputBox, &statisticsDataMenu);
 
-Menu mainMenu(-100, 0, 0, 0, 70, 64, 4, {
-    new Text("Calculator"),
-    new Text("RPN Calc"),
-    new Text("Graphic"),
-    new Text("Statistics"),
-    new Text("Macropad"), 
-    new Text("Programs"), 
-    new Text("Stopwatch"),
-    new Text("Settings")
-},
-{
-    &calcMain, 
-    &calcRPN,
-    &graCalc,
-    &statistics,
-    &macropadUI, 
-    &programMenu, 
-    &stopwatchUI,
+LowVoltage lowVoltageUI;
+Menu mainMenu(-100, 0, 0, 0, 70, 64, 4, {new Text("Calculator"), new Text("RPN Calc"), new Text("Graphic"), new Text("Statistics"), new Text("Macropad"), new Text("Programs"), new Text("Stopwatch"), new Text("Settings")},
+              {&calcMain,
+               &calcRPN,
+               &graCalc,
+               &statistics,
+               &macropadUI,
+               &programMenu,
+               &stopwatchUI,
     &menuSettings
 });
 
 
-UIElement* currentElement = &mainMenu;
+UIElement *currentElement = &mainMenu;
+UIElement *previousElement = nullptr;
 
-void displayTitle() {
-    if (currentElement == &mainMenu) {
+void displayTitle()
+{
+    if (currentElement == &mainMenu)
+    {
         u8g2.drawStr(87, 15, ("Running Time: " + rtc.getTime("%T")).c_str());
         u8g2.setFont(u8g2_font_inb19_mf);
         u8g2.drawStr(78, 35, "SCI-CLAC");
@@ -227,5 +213,31 @@ void displayTitle() {
         u8g2.drawStr(90, 55, "Owned by Aunt_nuozhen");
         u8g2.setFont(u8g2_font_profont10_mf);
     }
-    //struct tm timeinfo = rtc.getTimeStruct();
+    // struct tm timeinfo = rtc.getTimeStruct();
+}
+
+void checkLowVoltage()
+{
+    if (getBatteryVoltage() < 2.8)
+    {
+        if (currentElement != &lowVoltageUI)
+        {
+            previousElement = currentElement;
+            currentElement = &lowVoltageUI;
+        }
+        sleep(500);
+    }
+    else if (currentElement == &lowVoltageUI)
+    {
+        if (previousElement != nullptr)
+        {
+            currentElement = previousElement;
+            previousElement = nullptr;
+        }
+        else
+        {
+            currentElement = &mainMenu;
+        }
+    }
+
 }

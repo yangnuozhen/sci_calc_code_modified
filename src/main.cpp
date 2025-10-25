@@ -54,6 +54,7 @@ void loop() {
     kb.update();
     drawSidebar();
     currentElement -> update();
+    checkLowVoltage();
     updateTmp();
     u8g2.sendBuffer();
 }

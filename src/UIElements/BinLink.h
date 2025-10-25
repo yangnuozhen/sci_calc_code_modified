@@ -6,6 +6,7 @@
 class BinLink : public UIElement {
     public: 
         BinLink(std::string path);
+        BinLink(std::string path, bool isRoot);
 
         void activate();
 

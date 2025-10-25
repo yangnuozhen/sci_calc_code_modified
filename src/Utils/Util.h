@@ -46,7 +46,7 @@ Fixed Macropad bug where in some layers row 0 and 1 were swapped.
 
 */
 
-const std::string VERSION = "Aunt_nuozhen Modified - 2.1";
+const std::string VERSION = "Aunt_nuozhen Modified - 2.2";
 const int REFRESH_DURATION = 10; // The refresh rate of the the program (in milliseconds)
 const float DELTA_TIME = 100; // in milliseconds
 extern bool sample;
@@ -140,6 +140,7 @@ void updateFromFS(fs::FS &fs, std::string);
 void rebootEspWithReason(std::string reason);
 uint8_t getBatteryLevel();
 float getBatteryVoltage();
+std::string getBatteryPercentageStr();
 void printHeapInfo();
 bool checkSyntax(std::string str);
 
