@@ -7,7 +7,7 @@
 
 
 BleKeyboard bleKeyboard("SCI-CALC", "SHAP", 100);
-
+bool sdAvailable = true;
 
 void init() {
     u8g2.begin();
