@@ -18,6 +18,7 @@ class Expression {
         Expression(std::vector <Node> nodes, bool isRPN);
 
         Node* const getRoot() const;
+        bool isValid() const;
 
         // These are used for calculating the derivatives of Expressions
         Expression operator +(const Expression& rhs) const;

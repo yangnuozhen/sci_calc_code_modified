@@ -20,7 +20,8 @@ void GraphicDrawer::setExpression(std::string expression)
 {
     bool state = false;
     int curtimesyntax = 0;
-    if (!syntaxChecker.checkSyntax(expression))
+    Expression parsedExpression(expression);
+    if (!parsedExpression.isValid())
     {
         state = true;
         curtimesyntax = millis();
@@ -42,7 +43,7 @@ void GraphicDrawer::setExpression(std::string expression)
         }
     }
     this->expression = expression;
-    expressionObject = new Expression(expression);
+    expressionObject = new Expression(parsedExpression);
     hasExpression = true;
     isDrew = false;
     isDrawing = true;

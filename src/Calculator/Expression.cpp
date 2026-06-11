@@ -39,7 +39,6 @@ Expression::Expression(std::string str)
 {
     this->root = buildTree(shuntingYard(parseString(str)));
     this->isRPN = false;
-    this->isValidSyntax = true;
 }
 
 Expression::Expression(std::vector<Node> nodes, bool isRPN)
@@ -73,6 +72,11 @@ Expression::Expression(std::vector<Node> nodes)
 Node *const Expression::getRoot() const
 {
     return this->root;
+}
+
+bool Expression::isValid() const
+{
+    return this->isValidSyntax && this->root != nullptr;
 }
 
 Expression Expression::operator+(const Expression &rhs) const
@@ -115,7 +119,7 @@ std::vector<Node> Expression::parseString(std::string str)
     std::vector<Node> nodes;
     Serial.println("Start parsing");
     int prev = 0;
-    bool syntaxFlag = true;
+    this->isValidSyntax = true;
     for (int i = 0; i < str.size(); i++)
     {
         Serial.println(("Substring: " + str.substr(prev, i - prev + 1)).c_str());
@@ -134,15 +138,18 @@ std::vector<Node> Expression::parseString(std::string str)
         }
         else if ('0' <= str[i] && str[i] <= '9' || str[i] == '.')
         {
+            if (prev != i)
+            {
+                this->isValidSyntax = false;
+                break;
+            }
             Serial.println("number");
             long double res = 0;
             int j = i;
             bool pastDecimalPoint = false;
             long double cnt = 1;
-            while ('0' <= str[j] && str[j] <= '9' || str[j] == '.')
+            while (j < str.size() && (('0' <= str[j] && str[j] <= '9') || str[j] == '.'))
             {
-                if (j == str.size())
-                    break;
                 if (pastDecimalPoint)
                     cnt *= 10;
                 if (str[j] == '.')
@@ -156,17 +163,18 @@ std::vector<Node> Expression::parseString(std::string str)
             nodes.push_back(Node(NUM, res));
             prev = i + 1;
         }
-        else if (str.substr(prev, i - prev + 1) == "x")
+        else if (str[i] == 'x')
         {
+            if (prev != i)
+            {
+                this->isValidSyntax = false;
+                break;
+            }
             nodes.push_back(Node(VAR, "x"));
             prev = i + 1;
         }
     }
-    if (syntaxFlag)
-    {
-        this->isValidSyntax = true;
-    }
-    else
+    if (prev != str.size())
     {
         this->isValidSyntax = false;
     }
@@ -179,6 +187,7 @@ std::vector<Node> Expression::parseStringRPN(std::string str)
 {
     std::vector<Node> nodes;
     int prev = 0;
+    this->isValidSyntax = true;
     for (int i = 0; i < str.size(); i++)
     {
         if (str[i] == ' ')
@@ -200,14 +209,17 @@ std::vector<Node> Expression::parseStringRPN(std::string str)
         }
         else if ('0' <= str[i] && str[i] <= '9')
         {
+            if (prev != i)
+            {
+                this->isValidSyntax = false;
+                break;
+            }
             long double res = 0;
             int j = i;
             bool pastDecimalPoint = false;
             long double cnt = 1;
-            while ('0' <= str[j] && str[j] <= '9' || str[j] == '.')
+            while (j < str.size() && (('0' <= str[j] && str[j] <= '9') || str[j] == '.'))
             {
-                if (j == str.size())
-                    break;
                 if (pastDecimalPoint)
                     cnt *= 10;
                 if (str[j] == '.')
@@ -221,73 +233,101 @@ std::vector<Node> Expression::parseStringRPN(std::string str)
             nodes.push_back(Node(NUM, res));
             prev = i + 1;
         }
-        else if (str.substr(prev, i - prev + 1) == "x")
+        else if (str[i] == 'x')
         {
+            if (prev != i)
+            {
+                this->isValidSyntax = false;
+                break;
+            }
             nodes.push_back(Node(VAR, "x"));
             prev = i + 1;
+        }
+        else
+        {
+            this->isValidSyntax = false;
+            break;
         }
     }
     // printNodeVector(nodes);
     // std::cout << std::endl;
-    this->isValidSyntax = true;
+    if (prev != str.size())
+    {
+        this->isValidSyntax = false;
+    }
     return nodes;
 }
 
 bool Expression::checkSyntax(std::vector<Node> nodes)
 {
-    // check paraens
     if (!this->isValidSyntax)
     {
         return false;
     }
+    if (nodes.empty())
+    {
+        Serial.println("empty expression");
+        return false;
+    }
+
     int paracnt = 0;
-    bool prevIsUnary = false;
-    bool prevIsBinary = false;
+    bool expectsOperand = true;
     for (int i = 0; i < nodes.size(); i++)
     {
-        if (nodes[i].getToken() == NUM || nodes[i].getToken() == VAR)
-        {
-            continue;
-        }
-        if (nodes[i].getToken() == LPARA)
-        {
-            paracnt++;
-        }
-        else if (nodes[i].getToken() == RPARA)
-        {
-            paracnt--;
-        }
-        else if (nodes[i].getToken() == NEGATIVE)
-        {
-            continue;
-        }
-        else if (nodes[i].getToken() == ADD || nodes[i].getToken() == SUB || nodes[i].getToken() == MUL || nodes[i].getToken() == DIV || nodes[i].getToken() == POW)
-        {
-            if (i == 0 || i == nodes.size() - 1)
-            {
-                Serial.println("out of bounds");
-                return false;
-            }
-            if ((nodes[i - 1].getToken() == ADD || nodes[i - 1].getToken() == SUB || nodes[i - 1].getToken() == MUL || nodes[i - 1].getToken() == DIV) ||
-                (nodes[i + 1].getToken() == ADD || nodes[i + 1].getToken() == SUB || nodes[i + 1].getToken() == MUL || nodes[i + 1].getToken() == DIV))
-            {
-                Serial.println("in binary");
-                return false;
-            }
-        }
+        Token token = nodes[i].getToken();
 
+        if (token == NUM || token == VAR)
+        {
+            if (!expectsOperand)
+            {
+                Serial.println("unexpected operand");
+                return false;
+            }
+            expectsOperand = false;
+            continue;
+        }
+        if (token == LPARA)
+        {
+            if (!expectsOperand)
+            {
+                Serial.println("unexpected left para");
+                return false;
+            }
+            paracnt++;
+            continue;
+        }
+        if (token == RPARA)
+        {
+            if (expectsOperand)
+            {
+                Serial.println("unexpected right para");
+                return false;
+            }
+            paracnt--;
+            expectsOperand = false;
+        }
+        else if (token == NEGATIVE || nodes[i].isUnary())
+        {
+            if (!expectsOperand)
+            {
+                Serial.println("unexpected unary");
+                return false;
+            }
+            continue;
+        }
+        else if (nodes[i].isBinary())
+        {
+            if (expectsOperand)
+            {
+                Serial.println("unexpected binary");
+                return false;
+            }
+            expectsOperand = true;
+        }
         else
         {
-            if (i == nodes.size() - 1)
-            {
-                Serial.printf("out of bounds unary");
-                return false;
-            }
-            if (nodes[i + 1].getToken() != LPARA)
-            {
-                Serial.println("in unary");
-                // return false;
-            }
+            Serial.println("unknown token");
+            return false;
         }
 
         if (paracnt < 0)
@@ -302,13 +342,27 @@ bool Expression::checkSyntax(std::vector<Node> nodes)
         Serial.println("para mismatch");
         return false;
     }
+    if (expectsOperand)
+    {
+        Serial.println("expression ended early");
+        return false;
+    }
     Serial.println("Syntax true 2");
     return true;
 }
 
 bool Expression::checkSyntax(std::string str)
 {
-    return checkSyntax(parseString(str));
+    std::vector<Node> nodes = parseString(str);
+    if (!checkSyntax(nodes))
+    {
+        return false;
+    }
+
+    std::queue<Node> rpn = shuntingYard(nodes);
+    Expression validationExpression;
+    validationExpression.root = validationExpression.buildTree(rpn);
+    return validationExpression.isValid();
 }
 
 std::queue<Node> Expression::shuntingYard(std::vector<Node> nodes)
@@ -371,49 +425,74 @@ std::queue<Node> Expression::parseRPN(std::vector<Node> nodes)
 
 Node *Expression::buildTree(std::queue<Node> rpn)
 {
+    if (rpn.empty())
+    {
+        this->isValidSyntax = false;
+        return nullptr;
+    }
+
     std::stack<Node *> stk;
 
     while (!rpn.empty())
     {
         Node cur = rpn.front();
         rpn.pop();
+        addNode(cur);
+        Node *currentNode = &nodeList[lastNode];
+
         if (cur.getToken() == NUM || cur.getToken() == VAR)
         {
-            addNode(cur);
-            stk.push(&nodeList[lastNode]);
+            stk.push(currentNode);
         }
         else
         {
-            addNode(cur);
             if (cur.isUnary())
             {
-                if (!stk.empty())
+                if (stk.empty())
                 {
-                    nodeList[lastNode].setLeftChild(stk.top());
-                    stk.pop();
+                    this->isValidSyntax = false;
+                    return nullptr;
                 }
+                currentNode->setLeftChild(stk.top());
+                stk.pop();
             }
-            if (cur.isBinary())
+            else if (cur.isBinary())
             {
-                if (!stk.empty())
+                if (stk.size() < 2)
                 {
-                    nodeList[lastNode].setRightChild(stk.top());
-                    stk.pop();
+                    this->isValidSyntax = false;
+                    return nullptr;
                 }
-                if (!stk.empty())
-                {
-                    nodeList[lastNode].setLeftChild(stk.top());
-                    stk.pop();
-                }
+                currentNode->setRightChild(stk.top());
+                stk.pop();
+                currentNode->setLeftChild(stk.top());
+                stk.pop();
             }
-            stk.push(&nodeList[lastNode]);
+            else
+            {
+                this->isValidSyntax = false;
+                return nullptr;
+            }
+            stk.push(currentNode);
         }
     }
+
+    if (stk.size() != 1)
+    {
+        this->isValidSyntax = false;
+        return nullptr;
+    }
+
     return stk.top();
 }
 
 std::string Expression::getExpressionStringPointer(Node *node)
 {
+    if (node == nullptr)
+    {
+        return "";
+    }
+
     std::string res = "";
     if (node->getToken() == NUM)
     {
@@ -430,10 +509,19 @@ std::string Expression::getExpressionStringPointer(Node *node)
     {
         if (node->isUnary())
         {
+            if (node->getLeftChild() == nullptr)
+            {
+                return tokenStr[node->getToken()] + "(?)";
+            }
             res = tokenStr[node->getToken()] + "(" + getExpressionStringPointer(node->getLeftChild()) + ")";
         }
         else if (node->isBinary())
         {
+            if (node->getLeftChild() == nullptr || node->getRightChild() == nullptr)
+            {
+                return "?";
+            }
+
             if (node->getLeftChild()->getPrecedence() < node->getPrecedence())
             {
                 res += "(" + getExpressionStringPointer(node->getLeftChild()) + ")";
@@ -465,6 +553,11 @@ std::string Expression::getExpressionString()
 
 bool Expression::simplifyPointer(Node *node)
 { // WARNING!!! THIS FUNCTION WOULD MODIFY NODES THAT MIGHT BE LINKED TO PREVIOUS EXPRESSIONS!! IT IS ALWAYS RECOMMENDED TO DO COPYEXPRESSION FIRST, THEN SIMPLIFY ON THAT. true: has variable, false: no variables must do non variable first
+    if (node == nullptr)
+    {
+        return false;
+    }
+
     bool lson = false, rson = false;
     if (node->getLeftChild() != nullptr)
         lson = simplifyPointer(node->getLeftChild());
@@ -647,6 +740,11 @@ void Expression::simplify()
 
 long double Expression::evaluateExpressionPointer(Node *node)
 {
+    if (node == nullptr)
+    {
+        return 0;
+    }
+
     switch (node->getToken())
     {
     case NUM:
@@ -695,6 +793,10 @@ long double Expression::evaluateExpressionPointer(Node *node)
 
 long double Expression::evaluateExpression()
 {
+    if (!isValid())
+    {
+        return 0;
+    }
     return evaluateExpressionPointer(this->root);
 }
 

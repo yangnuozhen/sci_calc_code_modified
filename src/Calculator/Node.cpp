@@ -142,6 +142,7 @@ Node* addNode(Node node) {
 }
 
 Node* copyExpression(Node* target) { //Copies the expression with the root target, returns the new copied expression's root
+    if (target == nullptr) return nullptr;
     addNode(Node(target -> getToken(), target -> getValue()));
     int index = lastNode;
     Node* res = &nodeList[index];

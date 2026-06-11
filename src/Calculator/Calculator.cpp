@@ -31,7 +31,8 @@ void Calculator::insertExpression()
 
 void Calculator::enter()
 {
-    if (!syntaxChecker.checkSyntax(this->expressionInput->getStr()))
+    Expression expression(this->expressionInput->getStr(), RPNMode);
+    if (!expression.isValid())
     {
         state = true;
         curtimesyntax = millis();
@@ -52,7 +53,7 @@ void Calculator::enter()
             return;
         }
     }
-    UIElement *ptr = new ExpressionBlock(0, 0, 196, 12, Expression(this->expressionInput->getStr(), RPNMode));
+    UIElement *ptr = new ExpressionBlock(0, 0, 196, 12, expression);
     this->calcMenu->insertElement(ptr, ptr);
     this->expressionInput->clearStr();
     this->calcMenu->scrollDown();

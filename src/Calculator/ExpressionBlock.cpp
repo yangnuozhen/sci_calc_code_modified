@@ -2,9 +2,14 @@
 
 ExpressionBlock::ExpressionBlock(int x, int y, int width, int height, Expression expression) : UIElement(x, y, width, height) {
     this -> expression = expression;
-    this -> inputText.setText(this -> expression.getExpressionString());
+    if (this -> expression.isValid()) {
+        this -> inputText.setText(this -> expression.getExpressionString());
+    }
+    else {
+        this -> inputText.setText("INVALID");
+    }
     this -> inputText.setWidth(110);
-    long double tmp = this -> expression.evaluateExpression();
+    long double tmp = this -> expression.isValid() ? this -> expression.evaluateExpression() : 0;
     this -> ans.setText(numToStr(tmp));
     this -> ans.init();
     this -> rawRes = std::to_string(tmp);
