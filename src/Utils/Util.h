@@ -139,12 +139,27 @@ std::string numToStrRaw(long double x);
 void performUpdate(Stream &updateSource, size_t updateSize);
 void updateFromFS(fs::FS &fs, std::string);
 void rebootEspWithReason(std::string reason);
-uint8_t getBatteryLevel();
+
 float getBatteryVoltage();
+void initBatteryAdc();
+void resetBatteryVoltageFilter();
+float getBatteryVoltageRaw(uint8_t sampleCount);
+float getBatteryVoltagePrecise(uint8_t sampleCount);
+float getPrecisedBatteryVoltage();
+float getBatteryVoltage();
+void batteryUpdateTask(void * pvParameters);
+uint8_t getBatteryLevel(float voltage = getBatteryVoltage());
 std::string getBatteryPercentageStr();
 void printHeapInfo();
 bool checkSyntax(std::string str);
 
 // Used for program loading
 void initFromFile();
+struct BatteryLUT {
+    float voltage;
+    uint8_t percentage;
+};
+extern const BatteryLUT battery_table[];
+extern const uint8_t table_size;
+
 #endif

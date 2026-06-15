@@ -32,7 +32,8 @@ void appInit()
     }
 
     pinMode(36, INPUT);
-    // initFromFile();
+    initBatteryAdc();
+    xTaskCreatePinnedToCore(batteryUpdateTask, "BatTask", 2048, NULL, 1, NULL, 0);
 }
 
 void setup()

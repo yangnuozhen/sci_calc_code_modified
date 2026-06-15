@@ -457,11 +457,128 @@ void initFromFile()
     file.close();
 }
 
+const int ADC_PIN = 36;
+const uint8_t ADC_SAMPLE_COUNT = 8;
+float filtered_voltage = -1.0;
+const float ALPHA = 0.15f;
+const float BATTERY_DIVIDER_RATIO = 2.0f;
+
+// Two-point linear calibration:
+// raw 2.30V -> true 2.80V
+// raw 3.50V -> true 4.20V
+// 万用表测出来的，实际上不是线性的，但能用。
+const float BATTERY_CALIBRATION_RAW_LOW = 2.30f;
+const float BATTERY_CALIBRATION_TRUE_LOW = 2.80f;
+const float BATTERY_CALIBRATION_RAW_HIGH = 3.50f;
+const float BATTERY_CALIBRATION_TRUE_HIGH = 4.00f;
+
+float calibrateBatteryVoltage(float rawVoltage)
+{
+    const float rawSpan = BATTERY_CALIBRATION_RAW_HIGH - BATTERY_CALIBRATION_RAW_LOW;
+    if (fabsf(rawSpan) < 0.001f)
+    {
+        return rawVoltage;
+    }
+
+    const float scale = (BATTERY_CALIBRATION_TRUE_HIGH - BATTERY_CALIBRATION_TRUE_LOW) / rawSpan;
+    const float offset = BATTERY_CALIBRATION_TRUE_LOW - (BATTERY_CALIBRATION_RAW_LOW * scale);
+    return (rawVoltage * scale) + offset;
+}
+
+void initBatteryAdc()
+{
+    pinMode(ADC_PIN, INPUT);
+    analogReadResolution(12);
+    analogSetPinAttenuation(ADC_PIN, ADC_11db);
+    analogSetWidth(12);
+    resetBatteryVoltageFilter();
+}
+
+void resetBatteryVoltageFilter()
+{
+    filtered_voltage = -1.0f;
+}
+
+float getBatteryVoltageRaw(uint8_t sampleCount)
+{
+    if (sampleCount == 0)
+    {
+        sampleCount = 1;
+    }
+
+    uint16_t minMv = UINT16_MAX;
+    uint16_t maxMv = 0;
+    uint32_t totalMv = 0;
+
+    for (uint8_t i = 0; i < sampleCount; ++i)
+    {
+        const uint16_t currentMv = analogReadMilliVolts(ADC_PIN);
+        totalMv += currentMv;
+        if (currentMv < minMv)
+        {
+            minMv = currentMv;
+        }
+        if (currentMv > maxMv)
+        {
+            maxMv = currentMv;
+        }
+    }
+
+    if (sampleCount > 2)
+    {
+        totalMv -= minMv;
+        totalMv -= maxMv;
+        sampleCount -= 2;
+    }
+
+    const float adcVoltage = static_cast<float>(totalMv) / static_cast<float>(sampleCount) / 1000.0f;
+    return adcVoltage * BATTERY_DIVIDER_RATIO;
+}
+
+float getBatteryVoltagePrecise(uint8_t sampleCount)
+{
+    return calibrateBatteryVoltage(getBatteryVoltageRaw(sampleCount));
+}
+
+float getPrecisedBatteryVoltage()
+{
+    const float current_voltage = getBatteryVoltagePrecise(ADC_SAMPLE_COUNT);
+
+    if (filtered_voltage < 0.0f)
+    {
+        filtered_voltage = current_voltage;
+    }
+    else
+    {
+        filtered_voltage = (ALPHA * current_voltage) + ((1.0f - ALPHA) * filtered_voltage);
+    }
+
+    return filtered_voltage;
+}
+
+volatile float global_battery_v = 4.2f;
+
+// 后台电池采样任务
+void batteryUpdateTask(void *pvParameters)
+{
+    for (;;)
+    {
+        // 在后台可以使用多次采样取平均，因为不会卡主线程
+        float sum = 0;
+        for (int i = 0; i < 24; i++)
+        {
+            sum += getPrecisedBatteryVoltage();
+            vTaskDelay(pdMS_TO_TICKS(5)); // 使用非阻塞型延时，把 CPU 让给 UI 线程
+        }
+
+        global_battery_v = (sum / 24);
+    }
+}
+
+// 供 UI 线程调用的接口，直接读取全局变量，任何情况下都应该使用这个函数。
 float getBatteryVoltage()
 {
-    int adcValue = analogRead(36);
-    float voltage = adcValue / 4095.0 * 2 * 3.3; // 假设使用分压电路将电压分为一半
-    return voltage;
+    return global_battery_v;
 }
 
 void printHeapInfo()
@@ -482,50 +599,82 @@ void printHeapInfo()
     Serial.println(heap_info.minimum_free_bytes);
 }
 
-uint8_t getBatteryLevel()
+// 电压-电量查表，是由我手上设备测量得出的，仅供参考。
+// 校准请参考 fuyu-calc-battery-discharge 项目。
+const BatteryLUT battery_table[] = {
+    {3.972, 100},
+    {3.857, 90},
+    {3.817, 80},
+    {3.760, 70},
+    {3.709, 60},
+    {3.671, 50},
+    {3.653, 40},
+    {3.630, 30},
+    {3.588, 20},
+    {3.527, 10},
+    {3.496, 5},
+    {3.014, 0}};
+const uint8_t table_size = sizeof(battery_table) / sizeof(BatteryLUT);
+uint8_t getBatteryLevel(float voltage)
 {
-    float voltage = getBatteryVoltage();
-    float BATTERY_FULL_VOLTAGE = 4.3;
-    float BATTERY_EMPTY_VOLTAGE = 2.8;
-
-    // 限制电压范围在最低和最高电压之间
-    if (voltage > BATTERY_FULL_VOLTAGE)
+    if (voltage >= battery_table[0].voltage)
     {
-        voltage = BATTERY_FULL_VOLTAGE;
+        return 100;
     }
-    else if (voltage < BATTERY_EMPTY_VOLTAGE)
+    if (voltage <= battery_table[table_size - 1].voltage)
     {
-        voltage = BATTERY_EMPTY_VOLTAGE;
+        return 0;
     }
 
-    // 计算电量百分比
-    float percentage = (voltage - BATTERY_EMPTY_VOLTAGE) / (BATTERY_FULL_VOLTAGE - BATTERY_EMPTY_VOLTAGE) * 100;
-    return (uint8_t)percentage;
+    for (uint8_t i = 0; i < table_size - 1; i++)
+    {
+        if (voltage <= battery_table[i].voltage && voltage > battery_table[i + 1].voltage)
+        {
+
+            // 取出两个锚点的电压和百分比数值
+            float v_high = battery_table[i].voltage;
+            float v_low = battery_table[i + 1].voltage;
+            float p_high = battery_table[i].percentage;
+            float p_low = battery_table[i + 1].percentage;
+
+            // 线性插值公式计算具体百分比
+            float percentage = p_low + ((voltage - v_low) / (v_high - v_low)) * (p_high - p_low);
+
+            return (uint8_t)round(percentage); // 四舍五入取整
+        }
+    }
+    return 0;
 }
-
 std::string getBatteryPercentageStr()
 {
+    const float CHARGE_VOLTAGE = 4.5f;
+    static uint8_t last_percentage = 255; 
+    
     float voltage = getBatteryVoltage();
-    float BATTERY_MAX_VOLTAGE = 4.3;
-    float BATTERY_FULL_VOLTAGE = 3.7;
-    float BATTERY_EMPTY_VOLTAGE = 2.8;
-
-    if (voltage >= BATTERY_FULL_VOLTAGE)
+    
+    if (voltage >= CHARGE_VOLTAGE)
     {
+        last_percentage = 255; 
         return "CHG";
     }
-
-    // 限制电压范围在最低和最高电压之间
-    if (voltage > BATTERY_FULL_VOLTAGE)
+    
+    uint8_t current_percentage = getBatteryLevel(voltage);
+    
+    // 首次开机直接赋值
+    if (last_percentage == 255)
     {
-        voltage = BATTERY_FULL_VOLTAGE;
+        last_percentage = current_percentage;
     }
-    else if (voltage < BATTERY_EMPTY_VOLTAGE)
+    else
     {
-        voltage = BATTERY_EMPTY_VOLTAGE;
+        // 防抖核心逻辑：新旧电量差值必须大于等于 2% 才更新
+        // 过滤掉微小波动
+        int diff = abs((int)current_percentage - (int)last_percentage);
+        if (diff >= 2) 
+        {
+            last_percentage = current_percentage;
+        }
     }
-
-    // 计算电量百分比
-    float percentage = (voltage - BATTERY_EMPTY_VOLTAGE) / (BATTERY_FULL_VOLTAGE - BATTERY_EMPTY_VOLTAGE) * 100;
-    return (std::to_string(percentage) + "%");
+    
+    return std::to_string(last_percentage) + "%";
 }

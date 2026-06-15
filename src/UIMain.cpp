@@ -148,14 +148,15 @@ Menu weatherCitySelector(0, -70, 0, 0, 210, 64, 5, {
     &xiamenWeather,
 }); */
 
-Menu programMenu(0, -70, 0, 0, 210, 64, 4, {new Text("Chess"), new Text("Spacetrash"), new Text("Snake"), new Text("Tetris"), new Text("Catacombs of the damned"), new Text("Squario"), new Text("Web File Browser Server")},
+Menu programMenu(0, -70, 0, 0, 210, 64, 4, {new Text("Chess"), new Text("Spacetrash"), new Text("Snake"), new Text("Tetris"), new Text("Catacombs of the damned"), new Text("Squario"), new Text("Web File Browser Server"), new Text("Discharge Test")},
                  {new BinLink("/chess.bin"),
                   new BinLink("/spacetrash.bin"),
                   new BinLink("/snake.bin"),
                   new BinLink("/tetris.bin"),
                   new BinLink("/COTD.bin"),
                   new BinLink("/squario.bin"),
-                  new BinLink("/WFB.bin")});
+                  new BinLink("/WFB.bin"),
+                  new BinLink("/discharge.bin")});
 
 Menu stopwatchMenu(0, -70, 0, 0, 110, 64, 4);
 
