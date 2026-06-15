@@ -32,8 +32,7 @@ using ScottPlot;
 using System.Diagnostics;
 
 // 设置放电数据的 CSV 路径
-//string csvPath = "curve.csv";
-string csvPath = "F:\\sci-calc-research\\BatteryCurveAnalyzer\\curve.csv";
+string csvPath = "curve.csv";
 if (!File.Exists(csvPath))
 {
     Console.WriteLine($"[错误] 找不到文件: {csvPath}");
